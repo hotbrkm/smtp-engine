@@ -54,7 +54,6 @@ class EmailSendRunnerTest {
         Map<String, Object> target = EmailSendRunnerTestHelper.getTarget("pending@example.com", "PendingUser");
         List<Map<String, Object>> targetDataList = EmailSendRunnerTestHelper.toList(target);
 
-        EmailConfig emailConfig = EmailSendTestFactorySupport.createEmailSimulatorConfig(spoolDir.toString());
         EmailSendRunner runner = new EmailSendRunner(EmailSendRunnerTestHelper.toTargets(targetDataList), context, emailDomainManager, engine);
 
         // When: Execute
@@ -80,7 +79,6 @@ class EmailSendRunnerTest {
         Map<String, Object> sendRequest = EmailSendRunnerTestHelper.getSendRequest(123456789012345L, 1234567890123456L, 1);
         EmailSendContext context = EmailSendRunnerTestHelper.getContext(message, sendRequest);
 
-        EmailConfig emailConfig = EmailSendTestFactorySupport.createEmailSimulatorConfig(spoolDir.toString());
         EmailSendRunner runner = new EmailSendRunner(Collections.emptyList(), context, emailDomainManager, engine);
 
         // When: Execute
@@ -150,7 +148,6 @@ class EmailSendRunnerTest {
         Map<String, Object> target = EmailSendRunnerTestHelper.getTarget("exception@example.com", "ErrorUser");
         List<Map<String, Object>> targetDataList = EmailSendRunnerTestHelper.toList(target);
 
-        EmailConfig emailConfig = EmailSendTestFactorySupport.createEmailSimulatorConfig(spoolDir.toString());
         EmailSendRunner runner = new EmailSendRunner(EmailSendRunnerTestHelper.toTargets(targetDataList), context, emailDomainManager, engine);
 
         // When/Then: Exception is propagated on execution
