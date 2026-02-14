@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+    id 'com.github.ben-manes.versions'
+    id 'eclipse'
+}
+
+dependencies {
+    // Spring Framework
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'io.micrometer:micrometer-core'
+
+    // SMTP test server
+    implementation 'com.github.davidmoten:subethasmtp:7.2.0'
+
+    // DNS lookup
+    implementation 'dnsjava:dnsjava:3.6.3'
+
+    // Jakarta Mail API (email parsing)
+    implementation 'com.sun.mail:jakarta.mail:2.0.2'
+
+    // DKIM validation module
+    implementation 'org.simplejavamail:dkim-module:8.12.6'
+
+    // Apache Commons Codec
+    implementation 'commons-codec:commons-codec:1.15'
+}
+
+bootRun {
+    def rootDir = rootProject.projectDir
+    def profile = "default"
+
+    jvmArgs = [
+            "-Dspring.profiles.active=${profile}",
+            "-Dspring.devtools.livereload.enabled=true",
+            "-Dfile.encoding=UTF-8"
+    ]
+
+    args = [
+            "--spring.config.location=file:${rootDir}/conf/simulator/"
+    ]
+
+    workingDir = rootDir
+}

@@ -1,0 +1,296 @@
+spring:
+  application:
+    name: simulator
+  main:
+    web-application-type: none
+
+logging:
+  file:
+    path: ./log/simulator
+  config: classpath:logback.xml
+
+simulator:
+  smtp:
+    enabled: true
+    bind-address: 0.0.0.0
+    port: 2525
+    host-name: smtp.simulator
+    max-connections: 1000
+    store-messages: false
+    inbox-directory: ./spool/simulator/smtp
+
+    policy:
+      enabled: true
+      rules:
+        #──────────────────────────────────────────────────────────────
+        # [connection-limit] Concurrent connection limit
+        #   - Purpose: Limit per-IP/total concurrent connections to prevent server overload
+        #   - Behavior: Returns 421 and disconnects when connection limit exceeded at CONNECT phase
+        #   - per-ip-max-connections: Max concurrent connections per IP
+        #   - global-max-connections: Max total concurrent connections
+        #
+        # [soft-fail/hard-fail determination]
+        #   - on-exceed.code < 500  → TEMP_FAIL (soft-fail, 4xx)
+        #   - on-exceed.code >= 500 → PERM_FAIL (hard-fail, 5xx)
+        #   - disconnect: true      → DISCONNECT (disconnect regardless of code)
+        #──────────────────────────────────────────────────────────────
+        - type: connection-limit
+          enabled: true
+          phases: [connect-pre]
+          order: 50
+          connection-limit:
+            per-ip-max-connections: 50
+            global-max-connections: 500
+            on-exceed:
+              code: 421
+              message: "4.7.0 Too many connections, try again later."
+              disconnect: true
+
+        #──────────────────────────────────────────────────────────────
+        # [rate-limit] Simple recipient rate limit
+        #   - Purpose: Limit recipients per time window to suppress bulk sending
+        #   - Behavior: Returns 421 when recipient count exceeds limit within window at RCPT phase
+        #   - scope: Tracking unit (ip, mail-from-domain, rcpt-domain)
+        #   - window: Measurement time window (e.g., 1m = 1 minute)
+        #   - max-rcpt-per-window: Max allowed recipients per window
+        #
+        # [soft-fail/hard-fail determination]
+        #   - on-exceed.code < 500  → TEMP_FAIL (soft-fail)
+        #   - on-exceed.code >= 500 → PERM_FAIL (hard-fail)
+        #──────────────────────────────────────────────────────────────
+        - type: rate-limit
+          enabled: true
+          phases: [rcpt-pre]
+          order: 100
+          rate-limit:
+            scope: ip
+            window: 1m
+            max-rcpt-per-window: 300
+            on-exceed:
+              code: 421
+              message: "4.7.0 Temporarily deferred."
+
+        #──────────────────────────────────────────────────────────────
+        # [adaptive-rate-control] Adaptive rate control
+        #   - Purpose: Dynamically adjust sending speed based on real-time failure rate (soft-fail/hard-fail)
+        #   - Behavior: Switches tiers based on response statistics during observe-window,
+        #               applies per-tier rate limits. Returns 451 when exceeded
+        #   - scope: Tracking unit (ip+mail-from-domain = IP + sender domain combination)
+        #   - observe-window: Period for calculating failure rate statistics
+        #   - cooldown: Minimum time to stay in upper tier after promotion (prevents rapid changes)
+        #   - include-synthetic: If false, excludes synthetic responses (e.g., from fault-injection) from statistics
+        #   - tiers: Per-tier rate limit and entry condition definitions
+        #     - enter-when conditions: softfail-rate-gte, hardfail-rate-gte, softfail-consecutive-gte
+        #
+        # [soft-fail/hard-fail determination — statistics collection criteria]
+        #   - Classified based on response code from other policies:
+        #     smtpCode >= 500           → HARDFAIL (hard-fail)
+        #     400 <= smtpCode < 500     → SOFTFAIL (soft-fail)
+        #     otherwise                 → ALLOW
+        #   - Synthetic responses (e.g., from fault-injection) are excluded when include-synthetic: false
+        #   - 4xx responses from greylisting, rate-limit etc. are NOT synthetic, always included in statistics
+        #
+        # [soft-fail/hard-fail determination — when rate limit exceeded]
+        #   - on-limit.code < 500  → TEMP_FAIL (soft-fail)
+        #   - on-limit.code >= 500 → PERM_FAIL (hard-fail)
+        #──────────────────────────────────────────────────────────────
+        - type: adaptive-rate-control
+          enabled: true
+          phases: [rcpt-pre]
+          order: 200
+          adaptive-rate-control:
+            scope: ip+mail-from-domain
+            observe-window: 5m
+            cooldown: 10m
+            include-synthetic: false
+            tiers:
+              - name: NORMAL          # Default state: 300 per minute allowed
+                window: 1m
+                max-rcpt-per-window: 300
+                enter-when:
+                  always: true
+              - name: WARNING         # Warning state: 80 per minute when soft-fail >= 10% or 20 consecutive
+                window: 1m
+                max-rcpt-per-window: 80
+                enter-when:
+                  softfail-rate-gte: 0.10
+                  softfail-consecutive-gte: 20
+              - name: LIMITED         # Limited state: 10 per minute when soft-fail >= 30% or hard-fail >= 1%
+                window: 1m
+                max-rcpt-per-window: 10
+                enter-when:
+                  softfail-rate-gte: 0.30
+                  hardfail-rate-gte: 0.01
+            on-limit:
+              code: 451
+              enhanced-status: "4.7.1"
+              message: "Deferred by policy."
+
+        #──────────────────────────────────────────────────────────────
+        # [response-delay] Response delay
+        #   - Purpose: Add artificial delay to responses at specific tiers (WARNING, LIMITED)
+        #               to simulate real ISP throttling behavior
+        #   - Behavior: Delays response by delay ± jitter when apply-when condition is met
+        #   - delay: Base delay time
+        #   - jitter: Random variation range for delay (delay ± jitter)
+        #
+        # [tier-in global application mode]
+        #   - If tier-in list is empty or apply-when is omitted,
+        #     delay applies to all requests regardless of tier (global delay mode)
+        #   - Example:
+        #     response-delay:
+        #       delay: 100ms      # apply-when omitted → 100ms delay for all requests
+        #──────────────────────────────────────────────────────────────
+        - type: response-delay
+          enabled: true
+          phases: [rcpt-pre]
+          order: 220
+          response-delay:
+            apply-when:
+              tier-in: [WARNING, LIMITED]
+            delay: 100ms
+            jitter: 50ms
+
+        #──────────────────────────────────────────────────────────────
+        # [greylisting] Greylisting
+        #   - Purpose: Distinguish between legitimate MTAs that retry and spam senders that don't
+        #   - Behavior: Returns 451 on first attempt for (IP, mailFrom, rcptTo) combination.
+        #               Allows after retry-min-delay, maintains whitelist for whitelist-duration
+        #   - track-by: Tracking key combination (ip-mail-from-rcpt-to)
+        #   - retry-min-delay: Minimum wait time before retry is allowed
+        #   - retry-max-window: Maximum retry window (expires after)
+        #   - whitelist-duration: Whitelist maintenance duration after pass
+        #   - pending-expiration: Expiration time for pending entries without retry
+        #   - bypass: Greylisting bypass conditions (authenticated, IP, sender, recipient, hostname)
+        #
+        # [soft-fail/hard-fail determination]
+        #   - response.code < 500  → TEMP_FAIL (soft-fail, default 451)
+        #   - response.code >= 500 → PERM_FAIL (hard-fail)
+        #──────────────────────────────────────────────────────────────
+        - type: greylisting
+          enabled: true
+          phases: [rcpt-pre]
+          order: 400
+          greylisting:
+            track-by: ip-mail-from-rcpt-to
+            retry-min-delay: 1s
+            retry-max-window: 4h
+            whitelist-duration: 36d
+            pending-expiration: 4h
+            response:
+              code: 451
+              enhanced-status: "4.7.1"
+              message: "Greylisting in action. Try again later. [key={key}]"
+            bypass:
+              authenticated: false
+              whitelisted-ips: []
+              whitelisted-senders: []
+              whitelisted-recipients:
+                - "whitelist@example.com"
+              whitelisted-hostnames: []
+
+        #──────────────────────────────────────────────────────────────
+        # [disconnect] Forced disconnection
+        #   - Purpose: Force disconnect sessions matching specific domains/IPs/time windows
+        #   - Behavior: Returns 421 and disconnects when conditions are matched
+        #   - conditions.blocked-domains: List of blocked recipient domains
+        #   - close-after-reply: If true, disconnects immediately after response
+        #
+        # [soft-fail/hard-fail determination]
+        #   - close-after-reply: true → DISCONNECT (disconnect regardless of code)
+        #   - When close-after-reply: false:
+        #     reply.code < 500  → TEMP_FAIL (soft-fail)
+        #     reply.code >= 500 → PERM_FAIL (hard-fail)
+        #──────────────────────────────────────────────────────────────
+        - type: disconnect
+          enabled: false
+          phases: [rcpt-pre]
+          order: 500
+          disconnect:
+            conditions:
+              blocked-domains: [spam.com]
+            reply:
+              code: 421
+              message: "4.7.0 Session closed due to policy."
+            close-after-reply: true
+
+        #──────────────────────────────────────────────────────────────
+        # [mail-auth-check] Mail authentication check (SPF/DKIM/DMARC)
+        #   - Purpose: Verify sender authentication results for incoming mail and add Authentication-Results header
+        #   - Behavior: Performs SPF/DKIM/DMARC checks after DATA completion
+        #   - mode: lint (warn only) / enforce (reject on failure)
+        #   - add-authentication-results: If true, adds check results to header
+        #   - level: warn (log only) / tempfail (451) / reject (550)
+        #   - spf.verify-ip-match: Verify if sending IP matches SPF record
+        #   - dmarc.check-record-only: Only check DMARC record existence (skip alignment check)
+        #
+        # [soft-fail/hard-fail determination — by level]
+        #   - level: warn → ALLOW (log only, pass through)
+        #   - level: tempfail → TEMP_FAIL (451, soft-fail)
+        #   - level: reject → PERM_FAIL (550, hard-fail)
+        #
+        # [hard-fail(550) conditions — when level: reject]
+        #   - SPF FAIL or PERMERROR → 550 5.7.23 SPF validation failed
+        #   - DKIM FAIL or PERMERROR → 550 5.7.20 DKIM signature verification failed
+        #   - DMARC PERMERROR → 550 5.7.26 DMARC record check failed
+        #   - DMARC disposition=REJECT → 550 5.7.26 DMARC policy reject
+        #
+        # [soft-fail(451) conditions — when level: tempfail]
+        #   - SPF TEMPERROR → 451 4.7.1 SPF temporary failure
+        #   - DKIM TEMPERROR → 451 4.7.1 DKIM temporary failure
+        #   - DMARC TEMPERROR → 451 4.7.1 DMARC temporary failure
+        #   - Mail-From/From domain mismatch → 451 4.7.1 domain mismatch
+        #──────────────────────────────────────────────────────────────
+        - type: mail-auth-check
+          enabled: true
+          phases: [data-end]
+          order: 900
+          mail-auth-check:
+            mode: lint
+            add-authentication-results: true
+            spf:
+              enabled: true
+              level: warn
+              verify-ip-match: false
+            dkim:
+              enabled: true
+              level: warn
+            dmarc:
+              enabled: true
+              level: warn
+              check-record-only: true
+
+        #──────────────────────────────────────────────────────────────
+        # [fault-injection] Fault injection
+        #   - Purpose: Generate artificial error responses at defined ratios to test sending engine error handling
+        #   - Behavior: Injects 4xx/5xx responses based on distribution percentages
+        #   - mode: random (random per request) / windowed (pre-allocated by window-size)
+        #   - window-size: Allocation unit size for windowed mode
+        #   - seed: Random seed for reproducible results
+        #   - distribution: Response code percentages (e.g., 421:1, 451:3, 550:1 → 1,3,1 out of 100)
+        #   - actions.allow-disconnect: Allow disconnection for 421 responses
+        #   - actions.allow-delay: Add random delay to error responses
+        #
+        # [soft-fail/hard-fail determination]
+        #   - Based on response code in distribution:
+        #     code < 500  → TEMP_FAIL (soft-fail, e.g., 421, 451)
+        #     code >= 500 → PERM_FAIL (hard-fail, e.g., 550)
+        #   - Note: All responses are marked with synthetic=true.
+        #     Excluded from statistics when adaptive-rate-control has include-synthetic: false
+        #──────────────────────────────────────────────────────────────
+        - type: fault-injection
+          enabled: false
+          phases: [rcpt-pre]
+          order: 950
+          fault-injection:
+            mode: windowed
+            window-size: 100
+            seed: 12345
+            distribution:
+              421: 1
+              451: 3
+              550: 1
+            actions:
+              allow-disconnect: true
+              allow-delay: true
+              max-delay: 200ms

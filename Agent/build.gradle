@@ -1,0 +1,52 @@
+plugins {
+    id 'java-library'
+    id 'eclipse'
+    id 'com.github.ben-manes.versions'
+}
+
+dependencies {
+    // Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter'
+
+    // Jakarta Mail
+    implementation 'jakarta.mail:jakarta.mail-api'
+    runtimeOnly 'org.eclipse.angus:jakarta.mail'
+
+    // DNS
+    implementation 'dnsjava:dnsjava:3.6.3'
+
+    // DKIM
+    implementation 'org.apache.james.jdkim:apache-jdkim-library:0.5'
+
+    // Test
+    testImplementation project(':Simulator')
+    testImplementation 'com.github.davidmoten:subethasmtp:7.2.0'
+}
+
+tasks.named('test', Test) {
+    useJUnitPlatform {
+        excludeTags 'system', 'integration'
+    }
+}
+
+tasks.register('integrationTest', Test) {
+    group = 'verification'
+    description = 'Runs Agent integration tests tagged with @Tag("integration").'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    shouldRunAfter(tasks.named('test'))
+    useJUnitPlatform {
+        includeTags 'integration'
+    }
+}
+
+tasks.register('systemTest', Test) {
+    group = 'verification'
+    description = 'Runs Agent system tests tagged with @Tag("system").'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    shouldRunAfter(tasks.named('test'))
+    useJUnitPlatform {
+        includeTags 'system'
+    }
+}

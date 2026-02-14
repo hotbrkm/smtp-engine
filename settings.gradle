@@ -1,0 +1,3 @@
+rootProject.name = 'smtp-engine'
+include 'Agent'
+include 'Simulator'

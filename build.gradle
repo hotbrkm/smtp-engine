@@ -1,0 +1,123 @@
+plugins {
+    id 'base'
+    id 'org.springframework.boot' version '4.0.2' apply false
+    id 'com.github.ben-manes.versions' version '0.52.0' apply false
+}
+
+allprojects {
+    group = 'io.github.hotbrkm.smtpengine'
+    version = '0.0.1-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+clean {
+    delete file("${project.projectDir}/libs")
+}
+
+// subprojects 블록 밖 (Root의 최하단 등)에 정의
+tasks.register('copyAllDependencies', Copy) {
+    def libsDir = file("${project.projectDir}/libs")
+
+    doFirst {
+        if (libsDir.exists()) {
+            libsDir.deleteDir()
+        }
+        libsDir.mkdirs()
+    }
+
+    // 라이브러리 이름별로 가장 높은 버전 필터링
+    from {
+        def allFiles = []
+        subprojects.findAll { it.plugins.hasPlugin(JavaPlugin) }.each { sub ->
+            allFiles.addAll(sub.configurations.runtimeClasspath.incoming.artifactView {
+                componentFilter { it instanceof ModuleComponentIdentifier }
+            }.files)
+        }
+
+        return allFiles.groupBy { file ->
+            // 라이브러리 이름만 추출 (버전 제외)
+            file.name.replaceAll(/-[0-9].*$/, "")
+        }.values().collect { fileGroup ->
+            // 마디별 숫자 비교 로직 적용
+            fileGroup.max { a, b ->
+                def v1 = a.name.findAll(/[0-9]+/).collect { it.toInteger() }
+                def v2 = b.name.findAll(/[0-9]+/).collect { it.toInteger() }
+
+                // 각 마디별로 비교 (예: [1, 11, 0] vs [1, 9, 4])
+                for (int i = 0; i < Math.min(v1.size(), v2.size()); i++) {
+                    if (v1[i] != v2[i]) return v1[i] <=> v2[i]
+                }
+                v1.size() <=> v2.size()
+            }
+        }
+    }
+
+    into libsDir
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE // 중복 파일은 한 번만 복사
+}
+
+subprojects {
+    def springBootVersion = '4.0.2'
+
+    plugins.withType(JavaPlugin).configureEach {
+        java {
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(21)
+            }
+        }
+
+        tasks.register('copyDependencies', Copy) {
+            def libsDir = file("${rootProject.projectDir}/libs")
+            doFirst {
+                if (libsDir.exists()) {
+                    libsDir.eachFile { f ->
+                        if (f.isDirectory()) f.deleteDir() else f.delete()
+                    }
+                }
+            }
+
+            // runtimeClasspath에서 외부 라이브러리만 필터링
+            from configurations.runtimeClasspath.incoming.artifactView {
+                componentFilter { componentIdentifier ->
+                    // 현재 프로젝트(ModuleComponentIdentifier가 아닌 것)만 제외하거나,
+                    // 외부 모듈(ModuleComponentIdentifier)인 경우만 포함하도록 설정
+                    return componentIdentifier instanceof ModuleComponentIdentifier
+                }
+            }.files
+
+            into libsDir
+        }
+
+        test {
+            useJUnitPlatform()
+        }
+
+        dependencies {
+            // Spring Boot의 모든 라이브러리 버전을 관리해주는 플랫폼 가이드라인 적용
+            def bom = platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+            implementation bom
+            compileOnly bom
+            annotationProcessor bom
+            testImplementation bom
+            testCompileOnly bom
+            testAnnotationProcessor bom
+
+            compileOnly 'org.projectlombok:lombok'
+            annotationProcessor 'org.projectlombok:lombok'
+            testCompileOnly 'org.projectlombok:lombok'
+            testAnnotationProcessor 'org.projectlombok:lombok'
+
+            testImplementation 'org.springframework.boot:spring-boot-starter-test'
+            testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+        }
+
+        plugins.withId('org.springframework.boot') {
+            dependencies {
+                developmentOnly "org.springframework.boot:spring-boot-devtools:${springBootVersion}"
+            }
+        }
+    }
+}
