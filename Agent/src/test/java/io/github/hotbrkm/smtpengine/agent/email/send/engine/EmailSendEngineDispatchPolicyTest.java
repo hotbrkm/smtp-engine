@@ -1,7 +1,6 @@
 package io.github.hotbrkm.smtpengine.agent.email.send.engine;
 
 import io.github.hotbrkm.smtpengine.agent.email.mime.AttachmentMedia;
-import io.github.hotbrkm.smtpengine.agent.email.mime.AttachmentMediaType;
 import io.github.hotbrkm.smtpengine.agent.email.domain.EmailDomain;
 import io.github.hotbrkm.smtpengine.agent.email.domain.EmailDomainManager;
 import io.github.hotbrkm.smtpengine.agent.email.send.entry.EmailSendTarget;
@@ -196,7 +195,7 @@ class EmailSendEngineDispatchPolicyTest {
         try {
             CompletableFuture<EmailBatchResult> resultFuture = new CompletableFuture<>();
             DomainBatchTask task = task("att-timeout", "rt.com", ExecutionMode.REALTIME, DispatchLane.REALTIME_FRESH, 3,
-                    List.of(new AttachmentMedia(AttachmentMediaType.UPLOAD, "sample.txt", "/tmp/sample.txt", false, null)),
+                    List.of(new AttachmentMedia("sample.txt", "/tmp/sample.txt")),
                     resultFuture);
 
             setAttachmentInFlight(engine, 1);
@@ -275,7 +274,7 @@ class EmailSendEngineDispatchPolicyTest {
 
     private DomainBatchTask task(String batchId, String domain, ExecutionMode mode, DispatchLane lane, int retryCount, boolean hasAttachment) {
         List<AttachmentMedia> attachments = hasAttachment
-                ? List.of(new AttachmentMedia(AttachmentMediaType.UPLOAD, "sample.txt", "/tmp/sample.txt", false, null))
+                ? List.of(new AttachmentMedia("sample.txt", "/tmp/sample.txt"))
                 : List.of();
         return task(batchId, domain, mode, lane, retryCount, attachments);
     }

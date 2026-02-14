@@ -8,11 +8,7 @@ import java.nio.file.Path;
 class AttachmentReader {
 
     /**
-     * <pre>
-     * Creates email attachment content.
-     *   - UPLOAD: Reads the file uploaded by the user from their PC.
-     *   - PATH: Reads the file from the server path configured by the user.
-     * </pre>
+     * Creates email attachment content from file path.
      *
      * @param target Recipient data
      * @param media  Attachment information
@@ -20,13 +16,8 @@ class AttachmentReader {
      * @throws Exception
      */
     public byte[] read(EmailSendTarget target, AttachmentMedia media) throws Exception {
-        AttachmentMediaType mediaType = media.fileType();
-        if (AttachmentMediaType.UPLOAD == mediaType || AttachmentMediaType.PATH == mediaType) {
-            String filePath = media.filePath();
-            return Files.readAllBytes(Path.of(filePath));
-        } else {
-            throw new IllegalArgumentException("Unsupported file type (" + mediaType.getCode() + ").");
-        }
+        String filePath = media.filePath();
+        return Files.readAllBytes(Path.of(filePath));
     }
 
 }

@@ -41,7 +41,7 @@ class AttachmentLoaderTest {
         Files.write(file, content);
 
         AttachmentMedia media = new AttachmentMedia(
-                AttachmentMediaType.UPLOAD, "sample.txt", file.toString(), false, null);
+                "sample.txt", file.toString());
 
         AttachmentLoader loader = createLoader();
         EmailSendTarget target = target(List.of(media));
@@ -63,7 +63,7 @@ class AttachmentLoaderTest {
         Files.write(file, content);
 
         AttachmentMedia media = new AttachmentMedia(
-                AttachmentMediaType.PATH, "doc.pdf", file.toString(), false, null);
+                "doc.pdf", file.toString());
 
         AttachmentLoader loader = createLoader();
         EmailSendTarget target = target(List.of(media));
@@ -86,8 +86,8 @@ class AttachmentLoaderTest {
         Files.writeString(file2, "bbb");
 
         List<AttachmentMedia> mediaList = List.of(
-                new AttachmentMedia(AttachmentMediaType.UPLOAD, "a.txt", file1.toString(), false, null),
-                new AttachmentMedia(AttachmentMediaType.PATH, "b.txt", file2.toString(), false, null)
+                new AttachmentMedia("a.txt", file1.toString()),
+                new AttachmentMedia("b.txt", file2.toString())
         );
 
         AttachmentLoader loader = createLoader();

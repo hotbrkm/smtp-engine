@@ -3,7 +3,6 @@ package io.github.hotbrkm.smtpengine.agent.email.send.engine;
 import io.github.hotbrkm.smtpengine.agent.email.domain.EmailDomain;
 import io.github.hotbrkm.smtpengine.agent.email.domain.EmailDomainManager;
 import io.github.hotbrkm.smtpengine.agent.email.mime.AttachmentMedia;
-import io.github.hotbrkm.smtpengine.agent.email.mime.AttachmentMediaType;
 import io.github.hotbrkm.smtpengine.agent.email.send.entry.ExecutionMode;
 import io.github.hotbrkm.smtpengine.agent.email.send.entry.EmailSendTarget;
 import io.github.hotbrkm.smtpengine.agent.email.config.EmailConfig;
@@ -155,7 +154,7 @@ class ResourceGateExecutionModeIsolationTest {
         return new DomainBatchTask(
                 List.of(EmailSendTarget.builder()
                         .targetEmail("user@test.com")
-                        .attachments(List.of(new AttachmentMedia(AttachmentMediaType.UPLOAD, "file.txt", "/tmp/file.txt", false, null)))
+                        .attachments(List.of(new AttachmentMedia("file.txt", "/tmp/file.txt")))
                         .targetData(Collections.emptyMap())
                         .build()),
                 "test.com", batchId, new CompletableFuture<>(), 0, "test-runner", null, null,
