@@ -1,0 +1,177 @@
+<?xml version="1.0"?>
+<ruleset name="Custom PMD Rules"
+    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+    <description>Custom PMD rules for smtp-engine project</description>
+
+    <!-- Exclude test files -->
+    <exclude-pattern>.*/test/.*</exclude-pattern>
+    <exclude-pattern>.*/Test\.java</exclude-pattern>
+    
+    <!-- Exclude generated code -->
+    <exclude-pattern>.*/generated/.*</exclude-pattern>
+
+    <!-- Category: Best Practices -->
+    <rule ref="category/java/bestpractices.xml">
+        <exclude name="AccessorClassGeneration"/>
+        <exclude name="AvoidPrintStackTrace"/>
+        <exclude name="AvoidReassigningParameters"/>
+        <exclude name="UseTryWithResources"/>
+    </rule>
+
+    <!-- Category: Code Style -->
+    <rule ref="category/java/codestyle.xml">
+        <exclude name="AtLeastOneConstructor"/>
+        <exclude name="AvoidFinalLocalVariable"/>
+        <exclude name="AvoidPrefixingMethodParameters"/>
+        <exclude name="ConfusingTernary"/>
+        <exclude name="LocalVariableCouldBeFinal"/>
+        <exclude name="MethodArgumentCouldBeFinal"/>
+        <exclude name="TooManyStaticImports"/>
+        <exclude name="UnnecessaryLiteralInList"/>
+    </rule>
+
+    <!-- Category: Design -->
+    <rule ref="category/java/design.xml">
+        <exclude name="AvoidDeeplyNestedIfStmts"/>
+        <exclude name="AvoidRethrowingException"/>
+        <exclude name="AvoidThrowingNewInstanceOfSameException"/>
+        <exclude name="ExcessiveParameterList"/>
+        <exclude name="GodClass"/>
+        <exclude name="SimplifyBooleanAssertions"/>
+    </rule>
+
+    <!-- Category: Documentation -->
+    <rule ref="category/java/documentation.xml">
+        <exclude name="CommentRequired"/>
+        <exclude name="CommentSize"/>
+    </rule>
+
+    <!-- Category: Error Prone -->
+    <rule ref="category/java/errorprone.xml">
+        <exclude name="AvoidAccessibilityAlteration"/>
+        <exclude name="AvoidAssertAsIdentifier"/>
+        <exclude name="AvoidBranchingStatementAsLastInLoop"/>
+        <exclude name="AvoidCallingFinalize"/>
+        <exclude name="AvoidCatchingNPE"/>
+        <exclude name="AvoidCatchingThrowable"/>
+        <exclude name="AvoidDecimalLiteralsInBigDecimalConstructor"/>
+        <exclude name="AvoidDuplicateLiterals"/>
+        <exclude name="AvoidFieldNameMatchingMethodName"/>
+        <exclude name="AvoidFieldNameMatchingTypeName"/>
+        <exclude name="AvoidInstanceofChecksInCatchClause"/>
+        <exclude name="AvoidLosingExceptionInformation"/>
+        <exclude name="AvoidMultipleUnaryOperators"/>
+        <exclude name="AvoidNestedBlocks"/>
+        <exclude name="AvoidPreventSerializationInEqualityClauses"/>
+        <exclude name="AvoidRefactoringInConditionals"/>
+        <exclude name="AvoidSemicolonAfterDot"/>
+        <exclude name="AvoidStringBufferField"/>
+        <exclude name="AvoidThrowingNullPointerException"/>
+        <exclude name="AvoidThrowingRawExceptionTypes"/>
+        <exclude name="AvoidUncheckedExceptionsInSignatures"/>
+        <exclude name="AvoidUnmodifiablesCollections"/>
+        <exclude name="AvoidUsingHashCodeInEquals"/>
+        <exclude name="AvoidUsingOctalValues"/>
+        <exclude name="BadComparison"/>
+        <exclude name="BrokenNullCheck"/>
+        <exclude name="CheckResultSet"/>
+        <exclude name="ClassCastExceptionWithToArray"/>
+        <exclude name="CollapsibleIfStatements"/>
+        <exclude name="CompareObjectsWithEquals"/>
+        <exclude name="ComparisonWithItself"/>
+        <exclude name="ConstantsInConditions"/>
+        <exclude name="DefaultLabelNotLastInSwitchStmt"/>
+        <exclude name="DoNotCallGarbageCollectionExplicitly"/>
+        <exclude name="DoNotExtendJavaLangThrowable"/>
+        <exclude name="DoNotHardCodeSDCard"/>
+        <exclude name="DoNotThrowExceptionInFinally"/>
+        <exclude name="EmptyCatchBlock"/>
+        <exclude name="EmptyIfStmt"/>
+        <exclude name="EmptyInitializer"/>
+        <exclude name="EmptyStatementNotInLoop"/>
+        <exclude name="EmptySwitchStatements"/>
+        <exclude name="EmptySynchronizedBlock"/>
+        <exclude name="EmptyTryBlock"/>
+        <exclude name="EmptyWhileStmt"/>
+        <exclude name="EqualsNull"/>
+        <exclude name="ExplicitGarbageCollection"/>
+        <exclude name="FinalizeDoesNotCallSuperFinalize"/>
+        <exclude name="FinalizeOnlyCallsSuperFinalize"/>
+        <exclude name="FinalizeOverloaded"/>
+        <exclude name="FinalizeShouldBeProtected"/>
+        <exclude name="IdempotentOperations"/>
+        <exclude name="ImplicitSwitchFallThrough"/>
+        <exclude name="ImportFromSamePackage"/>
+        <exclude name="InefficientEmptyStringCheck"/>
+        <exclude name="InefficientStringBuffering"/>
+        <exclude name="InsufficientStringBuffering"/>
+        <exclude name="InvalidSlf4jMessageFormat"/>
+        <exclude name="JUnitSpelling"/>
+        <exclude name="JUnitTestContainsTooManyAsserts"/>
+        <exclude name="LiteralInCondition"/>
+        <exclude name="LittleLawOfDemeter"/>
+        <exclude name="LogStatementCatchesException"/>
+        <exclude name="LogStatementJavadoc"/>
+        <exclude name="LoopConditionNotUpdatedInsideLoop"/>
+        <exclude name="MessageDigestIsSecure"/>
+        <exclude name="MisplacedNullCheck"/>
+        <exclude name="MissingSerialVersionUID"/>
+        <exclude name="MissingStaticMethodInNonInstantiatableClass"/>
+        <exclude name="MoreThanOneLogger"/>
+        <exclude name="NonCaseLabelInSwitchStatement"/>
+        <exclude name="NonStaticInitializer"/>
+        <exclude name="NullAssignment"/>
+        <exclude name="OptimizableToArrayCall"/>
+        <exclude name="OverridableMethodCallDuringObjectConstruction"/>
+        <exclude name="PropertyAssignment"/>
+        <exclude name="ReturnEmptyArrayRatherThanNull"/>
+        <exclude name="ReturnFromFinallyBlock"/>
+        <exclude name="SimpleDateFormatNeedsLocale"/>
+        <exclude name="SimplifiableTestAssertion"/>
+        <exclude name="StaticEJBFieldShouldBeFinal"/>
+        <exclude name="StringBufferInstantiationWithChar"/>
+        <exclude name="StringToString"/>
+        <exclude name="SuspiciousEqualsMethodName"/>
+        <exclude name="SuspiciousHashcodeMethodName"/>
+        <exclude name="TestClassWithoutTestCases"/>
+        <exclude name="TooFewBracesForTryCatch"/>
+        <exclude name="UnconditionalIfStatement"/>
+        <exclude name="UnhandledExceptionInThrows"/>
+        <exclude name="UnnecessaryBooleanAssertion"/>
+        <exclude name="UnnecessaryCaseChange"/>
+        <exclude name="UnnecessaryConversionTemporary"/>
+        <exclude name="UnusedNullCheckInEquals"/>
+        <exclude name="UseCorrectExceptionLogging"/>
+        <exclude name="UseEqualsToCompareStrings"/>
+        <exclude name="UseIndexOfChar"/>
+        <exclude name="UseObjectForClearerAPI"/>
+        <exclude name="UseProperClassLoader"/>
+        <exclude name="UselessParentheses"/>
+        <exclude name="UselessStringValueOf"/>
+        <exclude name="UseSystemOutErr"/>
+        <exclude name="UseVarargs"/>
+        <exclude name="WhileLoopWithLiteralBoolean"/>
+    </rule>
+
+    <!-- Category: Multithreading -->
+    <rule ref="category/java/multithreading.xml">
+        <exclude name="AvoidSynchronizedAtMethodLevel"/>
+        <exclude name="DoNotUseThreads"/>
+        <exclude name="NonThreadSafeSingleton"/>
+    </rule>
+
+    <!-- Category: Performance -->
+    <rule ref="category/java/performance.xml">
+        <exclude name="AvoidArrayLoops"/>
+        <exclude name="AvoidInstantiatingObjectsInLoops"/>
+        <exclude name="ConsecutiveAppendsShouldReuse"/>
+        <exclude name="ConsecutiveLiteralAppends"/>
+        <exclude name="InefficientStringBuffering"/>
+        <exclude name="OptimizableToArrayCall"/>
+        <exclude name="UseArrayListInsteadOfVector"/>
+        <exclude name="UseArraysAsList"/>
+        <exclude name="UseStringBufferForStringAppends"/>
+    </rule>
+</ruleset>

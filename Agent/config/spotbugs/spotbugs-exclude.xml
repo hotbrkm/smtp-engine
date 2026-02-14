@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- Exclude generated classes -->
+    <Match>
+        <Class name="~.*\.generated\..*"/>
+    </Match>
+    
+    <!-- Exclude test classes -->
+    <Match>
+        <Class name="~.*Test"/>
+    </Match>
+    
+    <!-- Exclude Lombok generated code -->
+    <Match>
+        <Field name="~.*\$"/>
+    </Match>
+    
+    <!-- Ignore equals/hashCode in tests -->
+    <Match>
+        <Class name="~.*Test"/>
+        <Bug pattern="EQ_DOESNT_OVERRIDE_EQUALS,EQ_DOESNT_OVERRIDE_HASHCODE"/>
+    </Match>
+    
+    <!-- Ignore Serializable class without serialVersionUID in tests -->
+    <Match>
+        <Class name="~.*Test"/>
+        <Bug pattern="SE_NO_SERIALVERSIONID"/>
+    </Match>
+</FindBugsFilter>

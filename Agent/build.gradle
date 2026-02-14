@@ -4,6 +4,9 @@ plugins {
     id 'com.github.ben-manes.versions'
 }
 
+apply plugin: 'checkstyle'
+apply plugin: 'pmd'
+
 dependencies {
     // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter'
@@ -49,4 +52,40 @@ tasks.register('systemTest', Test) {
     useJUnitPlatform {
         includeTags 'system'
     }
+}
+
+// Checkstyle Configuration
+checkstyle {
+    ignoreFailures = true
+    configFile = file("${projectDir}/config/checkstyle/checkstyle.xml")
+    maxWarnings = 50
+}
+
+checkstyleMain {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+checkstyleTest {
+    enabled = false
+}
+
+// PMD Configuration
+pmd {
+    ignoreFailures = true
+    ruleSetFiles = files("${projectDir}/config/pmd/pmd-ruleset.xml")
+    rulesMinimumPriority.set(5)
+}
+
+pmdMain {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+pmdTest {
+    enabled = false
 }
