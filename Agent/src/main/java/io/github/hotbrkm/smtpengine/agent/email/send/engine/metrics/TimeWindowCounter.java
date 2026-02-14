@@ -1,7 +1,5 @@
 package io.github.hotbrkm.smtpengine.agent.email.send.engine.metrics;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.LongAdder;
 
