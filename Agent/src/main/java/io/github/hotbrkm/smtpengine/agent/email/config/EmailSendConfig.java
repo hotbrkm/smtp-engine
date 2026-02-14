@@ -7,7 +7,6 @@ import io.github.hotbrkm.smtpengine.agent.email.send.entry.EmailSendRunnerFactor
 import io.github.hotbrkm.smtpengine.agent.email.send.transport.smtp.SmtpSessionManagerFactory;
 import io.github.hotbrkm.smtpengine.agent.email.send.worker.EmailBatchSenderFactory;
 import io.github.hotbrkm.smtpengine.agent.email.send.transport.routing.RoutingService;
-import io.github.hotbrkm.smtpengine.agent.email.config.EmailConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

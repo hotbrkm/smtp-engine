@@ -82,7 +82,9 @@ public final class EmailSendTarget {
      * API for retrieving additional attributes.
      */
     public Object getAttribute(String key) {
-        if (attributes == null || key == null) return null;
+        if (attributes == null || key == null) {
+            return null;
+        }
         return attributes.get(key);
     }
 
@@ -90,7 +92,9 @@ public final class EmailSendTarget {
      * Retrieves a string value from additional attributes (Map).
      */
     public String getAttributeString(String key) {
-        if (attributes == null || key == null) return null;
+        if (attributes == null || key == null) {
+            return null;
+        }
         Object v = attributes.get(key);
         return v == null ? null : String.valueOf(v);
     }
@@ -107,9 +111,13 @@ public final class EmailSendTarget {
      * Retrieves an integer attribute from the original payload.
      */
     public Integer getAttributeInt(String key) {
-        if (attributes == null || key == null) return null;
+        if (attributes == null || key == null) {
+            return null;
+        }
         Object v = attributes.get(key);
-        if (v instanceof Integer i) return i;
+        if (v instanceof Integer i) {
+            return i;
+        }
         if (v instanceof String s) {
             try {
                 return Integer.parseInt(s);
@@ -139,7 +147,9 @@ public final class EmailSendTarget {
      * Removes a derived attribute that is no longer needed during internal processing.
      */
     public void removeAttribute(String key) {
-        if (attributes == null || key == null) return;
+        if (attributes == null || key == null) {
+            return;
+        }
         attributes.remove(key);
     }
 
@@ -182,24 +192,28 @@ public final class EmailSendTarget {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
         var that = (EmailSendTarget) obj;
-        return Objects.equals(this.targetEmail, that.targetEmail) &&
-               Objects.equals(this.senderName, that.senderName) &&
-               Objects.equals(this.senderEmail, that.senderEmail) &&
-               Objects.equals(this.targetId, that.targetId) &&
-               Objects.equals(this.targetName, that.targetName) &&
-               Objects.equals(this.title, that.title) &&
-               Objects.equals(this.body, that.body) &&
-               Objects.equals(this.attributes, that.attributes) &&
-               Objects.equals(this.attachments, that.attachments) &&
-               this.retryCount == that.retryCount &&
-               Objects.equals(this.sendCode, that.sendCode) &&
-               Objects.equals(this.sendStatus, that.sendStatus) &&
-               Objects.equals(this.errorMessage, that.errorMessage) &&
-               Objects.equals(this.endDateTime, that.endDateTime) &&
-               Objects.equals(this.emailDomain, that.emailDomain);
+        return Objects.equals(this.targetEmail, that.targetEmail)
+                && Objects.equals(this.senderName, that.senderName)
+                && Objects.equals(this.senderEmail, that.senderEmail)
+                && Objects.equals(this.targetId, that.targetId)
+                && Objects.equals(this.targetName, that.targetName)
+                && Objects.equals(this.title, that.title)
+                && Objects.equals(this.body, that.body)
+                && Objects.equals(this.attributes, that.attributes)
+                && Objects.equals(this.attachments, that.attachments)
+                && this.retryCount == that.retryCount
+                && Objects.equals(this.sendCode, that.sendCode)
+                && Objects.equals(this.sendStatus, that.sendStatus)
+                && Objects.equals(this.errorMessage, that.errorMessage)
+                && Objects.equals(this.endDateTime, that.endDateTime)
+                && Objects.equals(this.emailDomain, that.emailDomain);
     }
 
     @Override
@@ -210,19 +224,19 @@ public final class EmailSendTarget {
 
     @Override
     public String toString() {
-        return "SmtpRequest[" +
-               "rcptEmail=" + targetEmail + ", " +
-               "senderName=" + senderName + ", " +
-               "senderEmail=" + senderEmail + ", " +
-               "targetId=" + targetId + ", " +
-               "listSeq=" + getAttributeInt(ATTR_LIST_SEQ, 0) + ", " +
-               "targetName=" + targetName + ", " +
-               "title=" + title + ", " +
-               "body=" + (body != null ? "<" + body.length() + " chars>" : null) + ", " +
-               "rejectUrl=" + getAttributeString(ATTR_REJECT_URL) + ", " +
-               "retryCount=" + retryCount + ", " +
-               "sendCode=" + sendCode + ", " +
-               "sendStatus=" + sendStatus + ']';
+        return "SmtpRequest["
+                + "rcptEmail=" + targetEmail + ", "
+                + "senderName=" + senderName + ", "
+                + "senderEmail=" + senderEmail + ", "
+                + "targetId=" + targetId + ", "
+                + "listSeq=" + getAttributeInt(ATTR_LIST_SEQ, 0) + ", "
+                + "targetName=" + targetName + ", "
+                + "title=" + title + ", "
+                + "body=" + (body != null ? "<" + body.length() + " chars>" : null) + ", "
+                + "rejectUrl=" + getAttributeString(ATTR_REJECT_URL) + ", "
+                + "retryCount=" + retryCount + ", "
+                + "sendCode=" + sendCode + ", "
+                + "sendStatus=" + sendStatus + ']';
     }
 
 }

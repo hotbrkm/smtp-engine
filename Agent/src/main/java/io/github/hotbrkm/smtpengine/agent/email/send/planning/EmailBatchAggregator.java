@@ -131,7 +131,9 @@ public final class EmailBatchAggregator {
             int total = e.getValue();
             int success = domainSuccesses.getOrDefault(domain, 0);
             double rate = total > 0 ? (success * 100.0) / total : 0.0;
-            if (i > 0) sb.append(", ");
+            if (i > 0) {
+                sb.append(", ");
+            }
             sb.append(domain)
               .append(" (total=").append(total)
               .append(", success=").append(success)

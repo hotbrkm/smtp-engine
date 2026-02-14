@@ -83,7 +83,7 @@ final class DispatchProcessor {
                 break;
             }
 
-            DomainBatchTask domainBatchTask = pollNextTask( cycle.realtimeNoSlotDomains(), cycle.batchNoSlotDomains(),
+            DomainBatchTask domainBatchTask = pollNextTask(cycle.realtimeNoSlotDomains(), cycle.batchNoSlotDomains(),
                     cycle.batchDispatchedThisCycle(), cycle.batchDispatchLimit(), cycle.maxWorkers());
             if (domainBatchTask == null) {
                 break;
@@ -156,7 +156,7 @@ final class DispatchProcessor {
     private DomainBatchTask pollNextTask(Set<String> realtimeNoSlotDomains, Set<String> batchNoSlotDomains,
                                          int batchDispatchedThisCycle, int batchDispatchLimit, int maxWorkers) {
         boolean hasRealtimeFresh = batchQueue.hasAvailableBatch(DispatchLane.REALTIME_FRESH, realtimeNoSlotDomains);
-        boolean strictRealtimeOnly = hasRealtimeFresh && batchDispatchLimit <= 0;
+        boolean strictRealtimeOnly = hasRealtimeFresh && (batchDispatchLimit <= 0);
         List<DispatchLane> pollOrder = strictRealtimeOnly ? REALTIME_ONLY_POLL_ORDER : FULL_POLL_ORDER;
         for (DispatchLane lane : pollOrder) {
             if (!canDispatchLane(lane, batchDispatchedThisCycle, batchDispatchLimit, maxWorkers,

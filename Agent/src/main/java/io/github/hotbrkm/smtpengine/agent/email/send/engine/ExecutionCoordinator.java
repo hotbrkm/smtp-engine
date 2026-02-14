@@ -109,7 +109,7 @@ final class ExecutionCoordinator {
             if (!retryTargets.isEmpty()) {
                 domainSendMetrics.recordRetry(task.getDomain(), retryTargets.size());
             }
-            if (!retryTargets.isEmpty() && task.getRetryCount() < maxRetryCount) {
+            if (!retryTargets.isEmpty() && (task.getRetryCount() < maxRetryCount)) {
                 sender.incrementRetryCount(retryTargets);
                 retryScheduler.submitRetryBatch(task, retryTargets);
             } else {
@@ -182,7 +182,7 @@ final class ExecutionCoordinator {
     }
 
     void abortRunner(DomainBatchTask failedTask, ResultPersistenceException persistenceException) {
-        runnerExecutionGuard.abortRunner( failedTask, persistenceException,
+        runnerExecutionGuard.abortRunner(failedTask, persistenceException,
                 runnerId -> WaitTrackingSupport.removeWaitTrackingForRunner(runtimeState, runnerId),
                 this::completeTaskAsFailure
         );

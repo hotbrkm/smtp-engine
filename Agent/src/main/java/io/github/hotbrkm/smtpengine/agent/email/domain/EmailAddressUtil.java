@@ -6,7 +6,8 @@ public final class EmailAddressUtil {
      */
     public static final String INVALID = "INVALID";
 
-    private EmailAddressUtil() {}
+    private EmailAddressUtil() {
+    }
 
     public static String extractDomain(String email) {
         if (email == null) {

@@ -5,7 +5,8 @@ package io.github.hotbrkm.smtpengine.agent.email.send.transport.smtp;
  */
 public final class SmtpStatus {
 
-    private SmtpStatus() {}
+    private SmtpStatus() {
+    }
 
     /** Success */
     public static final int OK = 250;
@@ -22,12 +23,14 @@ public final class SmtpStatus {
      * Maps exceptions to transport status codes.
      */
     public static int fromException(Throwable e) {
-        if (e == null) return UNKNOWN_ERROR;
+        if (e == null) {
+            return UNKNOWN_ERROR;
+        }
 
         // Network-related exceptions are treated as temporary errors for retry classification
         if (e instanceof java.net.SocketTimeoutException
-            || e instanceof java.net.ConnectException
-            || e instanceof java.net.NoRouteToHostException) {
+                || e instanceof java.net.ConnectException
+                || e instanceof java.net.NoRouteToHostException) {
             return TEMPORARY_FAILURE;
         }
 

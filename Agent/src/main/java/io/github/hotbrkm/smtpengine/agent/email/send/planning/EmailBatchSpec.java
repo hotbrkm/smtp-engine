@@ -22,15 +22,19 @@ public final class EmailBatchSpec {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null || obj.getClass() != this.getClass()) {
+            return false;
+        }
         var that = (EmailBatchSpec) obj;
-        return Objects.equals(this.batchId, that.batchId) &&
-               Objects.equals(this.domain, that.domain) &&
-               Objects.equals(this.emailSendTargetList, that.emailSendTargetList) &&
-               Objects.equals(this.runnerId, that.runnerId) &&
-               Objects.equals(this.resultWriter, that.resultWriter) &&
-               Objects.equals(this.emailSendContext, that.emailSendContext);
+        return Objects.equals(this.batchId, that.batchId)
+                && Objects.equals(this.domain, that.domain)
+                && Objects.equals(this.emailSendTargetList, that.emailSendTargetList)
+                && Objects.equals(this.runnerId, that.runnerId)
+                && Objects.equals(this.resultWriter, that.resultWriter)
+                && Objects.equals(this.emailSendContext, that.emailSendContext);
     }
 
     @Override
@@ -40,13 +44,13 @@ public final class EmailBatchSpec {
 
     @Override
     public String toString() {
-        return "EmailBatchSubmitRequest[" +
-               "batchId=" + batchId + ", " +
-               "domain=" + domain + ", " +
-               "requests=" + emailSendTargetList + ", " +
-               "runnerId=" + runnerId + ", " +
-               "resultWriter=" + resultWriter + ", " +
-               "emailSendContext=" + emailSendContext + ']';
+        return "EmailBatchSubmitRequest["
+                + "batchId=" + batchId + ", "
+                + "domain=" + domain + ", "
+                + "requests=" + emailSendTargetList + ", "
+                + "runnerId=" + runnerId + ", "
+                + "resultWriter=" + resultWriter + ", "
+                + "emailSendContext=" + emailSendContext + ']';
     }
 
 }

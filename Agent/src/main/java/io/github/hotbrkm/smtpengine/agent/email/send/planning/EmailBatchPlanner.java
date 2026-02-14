@@ -5,7 +5,6 @@ import io.github.hotbrkm.smtpengine.agent.email.send.result.EmailBatchResultWrit
 import io.github.hotbrkm.smtpengine.agent.email.domain.EmailDomain;
 import io.github.hotbrkm.smtpengine.agent.email.domain.EmailDomainManager;
 import io.github.hotbrkm.smtpengine.agent.email.send.entry.EmailSendTarget;
-import io.github.hotbrkm.smtpengine.agent.email.domain.EmailAddressUtil;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;

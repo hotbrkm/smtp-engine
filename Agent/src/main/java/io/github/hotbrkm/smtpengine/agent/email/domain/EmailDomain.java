@@ -68,7 +68,12 @@ public class EmailDomain {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         EmailDomain that = (EmailDomain) o;
         return Objects.equals(domainName, that.domainName);
     }

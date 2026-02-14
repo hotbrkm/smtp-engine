@@ -2,7 +2,10 @@ package io.github.hotbrkm.smtpengine.agent.email.mime;
 
 import jakarta.activation.DataHandler;
 import jakarta.mail.Session;
-import jakarta.mail.internet.*;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.internet.MimeUtility;
 import jakarta.mail.util.ByteArrayDataSource;
 import lombok.Getter;
 
@@ -41,7 +44,7 @@ class MimeMessageBuilder {
     private String headerWordEncoding = "B";
     private String extensionHeader;
 
-    public MimeMessageBuilder() {
+    MimeMessageBuilder() {
         session = Session.getInstance(new Properties());
         mimeMessage = new MimeMessage(session);
         alternativeContent = new MimeMultipart("alternative");

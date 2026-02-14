@@ -11,7 +11,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static io.github.hotbrkm.smtpengine.agent.email.send.transport.smtp.SmtpCommand.*;
+import static io.github.hotbrkm.smtpengine.agent.email.send.transport.smtp.SmtpCommand.DATA;
+import static io.github.hotbrkm.smtpengine.agent.email.send.transport.smtp.SmtpCommand.DATA_END;
+import static io.github.hotbrkm.smtpengine.agent.email.send.transport.smtp.SmtpCommand.EHLO;
+import static io.github.hotbrkm.smtpengine.agent.email.send.transport.smtp.SmtpCommand.HELO;
+import static io.github.hotbrkm.smtpengine.agent.email.send.transport.smtp.SmtpCommand.INIT;
+import static io.github.hotbrkm.smtpengine.agent.email.send.transport.smtp.SmtpCommand.MAIL_FROM;
+import static io.github.hotbrkm.smtpengine.agent.email.send.transport.smtp.SmtpCommand.QUIT;
+import static io.github.hotbrkm.smtpengine.agent.email.send.transport.smtp.SmtpCommand.RCPT_TO;
+import static io.github.hotbrkm.smtpengine.agent.email.send.transport.smtp.SmtpCommand.RSET;
+import static io.github.hotbrkm.smtpengine.agent.email.send.transport.smtp.SmtpCommand.STARTTLS;
 
 /**
  * Handler that transmits SMTP commands and manages responses.

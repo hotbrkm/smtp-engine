@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Data
@@ -44,7 +45,7 @@ public class EmailConfig {
             if (domain == null || targetDomainList == null) {
                 return false;
             }
-            return targetDomainList.contains(domain.toLowerCase());
+            return targetDomainList.contains(domain.toLowerCase(Locale.ROOT));
         }
     }
 
@@ -68,8 +69,8 @@ public class EmailConfig {
         private String spoolDir;
         private String resultUploadDir;
 
-        private boolean dnsTrace = false;
-        private boolean smtpTrace = false;
+        private boolean dnsTrace;
+        private boolean smtpTrace;
 
         private int maxQueueSize = 30_000;
 
@@ -86,7 +87,7 @@ public class EmailConfig {
         private Map<Integer, Integer> bindIpCooldownCodeThresholds = new HashMap<>(Map.of(421, 1, 451, 2));
 
 
-        private boolean simulatorEnabled = false;
+        private boolean simulatorEnabled;
         private String simulatorServer;
 
         // EmailSendEngine runtime tuning
@@ -95,7 +96,7 @@ public class EmailConfig {
         private long batchInitialRetryDelayMs = DEFAULT_BATCH_INITIAL_RETRY_DELAY_MS;
         private long batchMaxRetryDelayMs = DEFAULT_BATCH_MAX_RETRY_DELAY_MS;
         private double batchRetryBackoffMultiplier = DEFAULT_BATCH_RETRY_BACKOFF_MULTIPLIER;
-        private long batchHoldMaxMs = 0L;
+        private long batchHoldMaxMs;
         private int batchReleasePercentPerCycle = 20;
         private int realtimeRetryMaxPercent = 35;
         private int batchRetryMaxPercent = 35;

@@ -18,25 +18,25 @@ import java.util.Optional;
 @Slf4j
 class DkimSigner {
 
-    private static final String signatureTemplate = "v=1; a=rsa-sha256; q=dns/txt; c=simple/simple; d=%s; s=%s; "
+    private static final String SIGNATURE_TEMPLATE = "v=1; a=rsa-sha256; q=dns/txt; c=simple/simple; d=%s; s=%s; "
                                                     + "h=Content-Type:MIME-Version:Subject:Message-ID:To:Sender:From:Date; bh=; b=";
 
     private final EmailConfig.Dkim dkim;
     private final DKIMSigner signer;
 
-    public DkimSigner(EmailConfig.Dkim dkim) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
+    DkimSigner(EmailConfig.Dkim dkim) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
         this.dkim = dkim;
         this.signer = initializeDkimSigner();
     }
 
     private DKIMSigner initializeDkimSigner() throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
-        String signatureTemplate = getSignatureTemplate();
+        String signatureTemplateStr = getSignatureTemplate();
         PrivateKey privateKey = loadPrivateKey(dkim.getKeyPath());
-        return new DKIMSigner(signatureTemplate, privateKey);
+        return new DKIMSigner(signatureTemplateStr, privateKey);
     }
 
     private String getSignatureTemplate() {
-        return String.format(signatureTemplate, dkim.getDomain(), dkim.getSelector());
+        return String.format(SIGNATURE_TEMPLATE, dkim.getDomain(), dkim.getSelector());
     }
 
     private PrivateKey loadPrivateKey(String privateKeyPath) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {

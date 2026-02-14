@@ -52,7 +52,9 @@ public class DomainSendMetrics {
      * Records retry count.
      */
     public void recordRetry(String domain, long count) {
-        if (count <= 0) return;
+        if (count <= 0) {
+            return;
+        }
         getCounters(domain).retry.record(count);
     }
 
@@ -67,7 +69,9 @@ public class DomainSendMetrics {
      * Records SMTP response time.
      */
     public void recordResponseTime(String domain, long elapsedMs) {
-        if (elapsedMs < 0) return;
+        if (elapsedMs < 0) {
+            return;
+        }
         DomainCounters counters = getCounters(domain);
         counters.responseTimeSum.record(elapsedMs);
         counters.responseTimeCount.record(1);
@@ -145,13 +149,13 @@ public class DomainSendMetrics {
      * Bundle of per-domain counters. All fields are thread-safe based on {@link TimeWindowCounter}.
      */
     static final class DomainCounters {
-        final TimeWindowCounter success;
-        final TimeWindowCounter failure;
-        final ConcurrentHashMap<Integer, TimeWindowCounter> resultCodes;
-        final TimeWindowCounter retry;
-        final TimeWindowCounter sessionFailure;
-        final TimeWindowCounter responseTimeSum;
-        final TimeWindowCounter responseTimeCount;
+        private final TimeWindowCounter success;
+        private final TimeWindowCounter failure;
+        private final ConcurrentHashMap<Integer, TimeWindowCounter> resultCodes;
+        private final TimeWindowCounter retry;
+        private final TimeWindowCounter sessionFailure;
+        private final TimeWindowCounter responseTimeSum;
+        private final TimeWindowCounter responseTimeCount;
 
         DomainCounters(int retentionWindows, int windowSeconds) {
             this.success = new TimeWindowCounter(retentionWindows, windowSeconds);
