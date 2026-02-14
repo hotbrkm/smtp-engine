@@ -1,6 +1,6 @@
 package io.github.hotbrkm.smtpengine.agent.email.send.entry;
 
-import io.github.hotbrkm.smtpengine.simulator.config.SimulatorSmtpProperties;
+import io.github.hotbrkm.smtpengine.simulator.smtp.properties.SimulatorSmtpProperties;
 import io.github.hotbrkm.smtpengine.simulator.smtp.policy.PolicyOrchestrator;
 import io.github.hotbrkm.smtpengine.simulator.smtp.policy.PolicyOrchestratorFactory;
 import io.github.hotbrkm.smtpengine.simulator.smtp.policy.model.SmtpPhase;
